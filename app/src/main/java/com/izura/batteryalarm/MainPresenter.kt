@@ -1,8 +1,24 @@
 package com.izura.batteryalarm
 
-class MainPresenter(private val view: MainContract.view, private val interactor: MainContract.interactor) : MainContract.presenter {
+class MainPresenter(private val view: MainContract.View, private val interactor: MainContract.Interactor) : MainContract.Presenter {
     init {
         interactor.presenter = this
+    }
+
+    override fun onResume() {
+        interactor.bindPowerReceiver()
+    }
+
+    override fun onPause() {
+//        interactor.unBindPowerReceiver()
+    }
+
+    override fun onDestroy() {
+        interactor.unBindPowerReceiver()
+    }
+
+    override fun onBatteryLevelChanged(level: Int) {
+        view.changeBatteryLevel(level)
     }
 
     override fun onPowerConnected() {

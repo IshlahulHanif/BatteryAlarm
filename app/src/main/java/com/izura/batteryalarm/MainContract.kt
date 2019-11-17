@@ -1,16 +1,21 @@
 package com.izura.batteryalarm
 
 interface MainContract {
-    interface view {
-
+    interface View {
+        fun changeBatteryLevel(level: Int)
     }
-    interface presenter {
+    interface Presenter {
+        fun onResume()
+        fun onPause()
+        fun onDestroy()
+        fun onBatteryLevelChanged(level: Int)
         fun onPowerConnected ()
         fun onPowerDisconnected ()
     }
-    interface interactor {
-        var presenter: presenter?
-        fun bindReceiver()
+    interface Interactor {
+        var presenter: Presenter?
+        fun bindPowerReceiver()
+        fun unBindPowerReceiver()
         fun onPowerConnected ()
         fun onPowerDisconnected ()
     }
