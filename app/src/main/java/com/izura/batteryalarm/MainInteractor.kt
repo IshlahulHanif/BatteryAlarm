@@ -10,12 +10,19 @@ class MainInteractor(private val context: Context) : MainContract.Interactor {
         get() = getSavedBatteryThreshold()
         set(value) {
             info("New threshold saved: $value")
-            prefs.setValue("battery_threshold",value)
+            prefs.setValue(BATTERY_THRESHOLD,value)
+        }
+    override var isAlarmOn: Boolean
+        get() = prefs.getBoolean(ALARM_ON_STATUS,true)
+        set(value) {
+            info("Alarm set to ${if (value) "on" else "off"}")
+            prefs.setValue(ALARM_ON_STATUS,value)
         }
     override var presenter: MainContract.Presenter? = null
     lateinit var powerConnectionReceiver : PowerConnectionReceiver
 
     override fun bindPowerReceiver() {
+        info("Power Receiver bounded")
         powerConnectionReceiver = PowerConnectionReceiver()
         presenter?.let {
             powerConnectionReceiver.onBatteryLevelChanged = it::onBatteryLevelChanged
@@ -35,7 +42,13 @@ class MainInteractor(private val context: Context) : MainContract.Interactor {
     }
 
     override fun unBindPowerReceiver() {
-        context.unregisterReceiver(powerConnectionReceiver)
+        try {
+            info("Power Receiver unbounded")
+            context.unregisterReceiver(powerConnectionReceiver)
+        } catch (e: IllegalArgumentException) {
+            warning("Power Receiver has not been bounded")
+            warning(e.localizedMessage)
+        }
     }
 
     override fun onPowerConnected() {
@@ -47,7 +60,7 @@ class MainInteractor(private val context: Context) : MainContract.Interactor {
     }
 
     private fun getSavedBatteryThreshold() : Int {
-        val lvl = prefs.getValue("battery_threshold",0)
+        val lvl = prefs.getValue(BATTERY_THRESHOLD,0)
         info("Current saved threshold: $lvl")
         return lvl
     }

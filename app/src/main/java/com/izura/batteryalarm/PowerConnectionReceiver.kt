@@ -19,6 +19,11 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         when (intent.action) {
             Intent.ACTION_POWER_CONNECTED -> {
                 info("Power connected")
+                //TODO: only start if applied at UI
+                val mAppIntent = context.packageManager.getLaunchIntentForPackage(context.applicationContext.packageName)
+                mAppIntent?.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                debug(context.applicationContext.packageName)
+                context.startActivity(mAppIntent)
                 onPowerConnected?.invoke()
                 context.showToast("The device is charging")
             }

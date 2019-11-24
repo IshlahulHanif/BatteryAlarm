@@ -64,7 +64,7 @@ inline fun <reified T:Any> SharedPreferences.getValue(key:String,defaultValue : 
     }
 }
 
-fun Any.info(msg: String, tag: String = javaClass.simpleName) { Log.i(tag, msg) }
-fun Any.debug(msg: String, tag: String = "shlh") { Log.d(tag, msg) }
-fun Any.warning(msg: String, tag: String = javaClass.simpleName) { Log.w(tag, msg) }
-fun Any.error(msg: String, tag: String = javaClass.simpleName) { Log.e(tag, msg) }
+fun Any.info(msg: String?, tag: String = javaClass.simpleName) { Log.i(tag, msg ?: "" ) }
+fun Any.debug(msg: String?, tag: String = "shlh") { Log.d(tag, msg?: "") }
+fun Any.warning(msg: String?, tag: String = javaClass.simpleName) { Log.w(tag, msg?: "") }
+fun Any.error(msg: String?, tag: String = javaClass.simpleName) { Log.e(tag, msg?: "") }
