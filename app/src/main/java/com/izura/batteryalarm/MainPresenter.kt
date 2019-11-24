@@ -1,6 +1,8 @@
 package com.izura.batteryalarm
 
-class MainPresenter(private val view: MainContract.View, private val interactor: MainContract.Interactor) : MainContract.Presenter {
+class MainPresenter(private val view: MainContract.View, private val interactor: MainContract.Interactor)
+    : MainContract.Presenter {
+
     init {
         interactor.presenter = this
     }
@@ -17,8 +19,15 @@ class MainPresenter(private val view: MainContract.View, private val interactor:
         interactor.unBindPowerReceiver()
     }
 
+    override fun onBtnSetAlarmLevelClicked(level: Int) {
+        interactor.batteryThreshold = level
+    }
+
     override fun onBatteryLevelChanged(level: Int) {
         view.changeBatteryLevel(level)
+        if (interactor.batteryThreshold <= level) {
+            view.startVibrate()
+        }
     }
 
     override fun onPowerConnected() {

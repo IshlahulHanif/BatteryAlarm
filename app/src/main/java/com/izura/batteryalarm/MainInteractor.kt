@@ -5,6 +5,13 @@ import android.content.Intent
 import android.content.IntentFilter
 
 class MainInteractor(private val context: Context) : MainContract.Interactor {
+    private val prefs by lazy {context.getDefaultPreferences()}
+    override var batteryThreshold: Int
+        get() = getSavedBatteryThreshold()
+        set(value) {
+            info("New threshold saved: $value")
+            prefs.setValue("battery_threshold",value)
+        }
     override var presenter: MainContract.Presenter? = null
     lateinit var powerConnectionReceiver : PowerConnectionReceiver
 
@@ -23,6 +30,10 @@ class MainInteractor(private val context: Context) : MainContract.Interactor {
         context.registerReceiver(powerConnectionReceiver, ifilter)
     }
 
+    override fun getCurrentBattery(): Int {
+        return powerConnectionReceiver.currentBatteryLvl
+    }
+
     override fun unBindPowerReceiver() {
         context.unregisterReceiver(powerConnectionReceiver)
     }
@@ -33,5 +44,11 @@ class MainInteractor(private val context: Context) : MainContract.Interactor {
 
     override fun onPowerDisconnected() {
         presenter!!.onPowerDisconnected()
+    }
+
+    private fun getSavedBatteryThreshold() : Int {
+        val lvl = prefs.getValue("battery_threshold",0)
+        info("Current saved threshold: $lvl")
+        return lvl
     }
 }

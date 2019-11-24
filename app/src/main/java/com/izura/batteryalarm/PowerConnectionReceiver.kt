@@ -12,22 +12,28 @@ class PowerConnectionReceiver : BroadcastReceiver() {
     var onPowerConnected : (() -> Unit)? = null
     var onPowerDisconnected: (() -> Unit)? = null
     var onBatteryLevelChanged: ((level: Int) -> Unit)? = null
-    //TODO: add vars
+
+    var currentBatteryLvl: Int = 0
 
     override fun onReceive(context: Context, intent: Intent) {
-        when {
-            intent.action == Intent.ACTION_POWER_CONNECTED -> {
+        when (intent.action) {
+            Intent.ACTION_POWER_CONNECTED -> {
+                info("Power connected")
                 onPowerConnected?.invoke()
-                Toast.makeText(context, "The device is charging", Toast.LENGTH_SHORT).show()
+                context.showToast("The device is charging")
             }
-            intent.action == Intent.ACTION_POWER_DISCONNECTED -> {
+            Intent.ACTION_POWER_DISCONNECTED -> {
+                info("Power disconnected")
                 onPowerDisconnected?.invoke()
-                Toast.makeText(context, "The device is not charging", Toast.LENGTH_SHORT).show()
+                context.showToast("The device is not charging")
             }
-            intent.action == Intent.ACTION_BATTERY_CHANGED -> {
-                onBatteryLevelChanged?.invoke(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0))
+            Intent.ACTION_BATTERY_CHANGED -> {
+                currentBatteryLvl = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
+                info("Battery level changed detected. Level: $currentBatteryLvl")
+                onBatteryLevelChanged?.invoke(currentBatteryLvl)
             }
             else -> {
+                warning("Unprocessed action: ${intent.action}")
                 Toast.makeText(context, "unknown", Toast.LENGTH_SHORT).show()
             }
         }
